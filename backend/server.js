@@ -29,6 +29,7 @@ const httpServer = http.createServer(app);
 const allowedOrigins = (process.env.CLIENT_ORIGIN || "")
     .split(",")
     .map((origin) => origin.trim())
+    .map((origin) => origin.replace(/\/+$/, ""))
     .filter(Boolean);
 
 app.use(cors({

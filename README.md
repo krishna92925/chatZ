@@ -677,6 +677,10 @@ The frontend expects:
 - `VITE_API_URL` to point to the backend `/api` base path.
 - The socket server to be reachable at the same origin as `VITE_API_URL` without the `/api` suffix.
 
+### Production deployment environment variables
+
+In Netlify, set `VITE_API_URL` to the Render backend URL followed by `/api`, for example `https://your-backend.onrender.com/api` (do not use `localhost`). In Render, set `CLIENT_ORIGIN` to the exact Netlify site origin, for example `https://your-site.netlify.app` (without a trailing slash). Redeploy both services after changing environment variables.
+
 ## Backend Overview
 
 Important backend areas:
