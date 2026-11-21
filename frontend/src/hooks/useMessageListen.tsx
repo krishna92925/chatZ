@@ -1,5 +1,4 @@
-import { use, useEffect, type RefObject } from "react";
-import { useAuthStore } from "../store/authStore";
+import { useEffect, type RefObject } from "react";
 import  { useSocketContext } from "../contexts/SocketContext";
 import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,7 +11,6 @@ export function useMessageListen(
     containerRef: RefObject<HTMLDivElement | null>
 
 ){
-    const {user}= useAuthStore();
     const {socket}= useSocketContext();
     const queryClient= useQueryClient();
     useEffect(()=>{

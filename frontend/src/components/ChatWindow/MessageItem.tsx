@@ -1,7 +1,7 @@
 import type { Message } from "../../services/messageService";
 import { useAuthStore } from "../../store/authStore";
 
-const MessageItem: React.FC<Message>=({_id,sender,content, read, createdAt})=>{
+const MessageItem: React.FC<Message>=({sender,content, createdAt})=>{
     const {user}= useAuthStore();
     const isSender= user?.id===sender._id;
 
