@@ -14,7 +14,7 @@ const Auth : React.FC=() =>{
             </div>
             
         </div>
-        <h1 className="text-3xl foont bold mb-2">Wekcome to Chatty</h1>
+        <h1 className="text-3xl foont bold mb-2">Welcome to chatZ</h1>
         <p className="text-lg">Connect with your friends and the world around you.</p>
 
     </div>

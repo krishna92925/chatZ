@@ -19,7 +19,8 @@ export const SocketProvider: React.FC<{children: React.ReactNode}> = ({children}
     const [socket, setSocket]= useState<Socket | null>(null);
     useEffect(()=>{
         if(!user)return;
-        const socketClient = io(import.meta.env.VITE_API_URL.replace('/api',''),{
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+        const socketClient = io(apiUrl.replace(/\/api\/?$/, ''),{
             withCredentials: true,
             reconnectionAttempts: 1
         })

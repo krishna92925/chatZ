@@ -1,6 +1,6 @@
-# Chatty
+# chatZ
 
-Chatty is a full-stack real-time chat application built with a React/Vite frontend and a Node.js/Express backend. It supports account registration, cookie-based authentication, friend discovery through connect codes, one-to-one conversations, live message delivery with Socket.IO, unread counts, typing indicators, and online/offline presence powered by Redis.
+chatZ is a full-stack real-time chat application built with a React/Vite frontend and a Node.js/Express backend. It supports account registration, cookie-based authentication, friend discovery through connect codes, one-to-one conversations, live message delivery with Socket.IO, unread counts, typing indicators, and online/offline presence powered by Redis.
 
 The repository is organized as a two-app workspace:
 
@@ -87,7 +87,7 @@ The repository is organized as a two-app workspace:
 
 ## Architecture
 
-Chatty uses a split HTTP and WebSocket architecture:
+chatZ uses a split HTTP and WebSocket architecture:
 
 1. The frontend calls the backend REST API through Axios using `withCredentials: true`.
 2. Login creates a signed JWT and stores it as the `jwt` cookie.
@@ -120,7 +120,7 @@ Redis
 ## Repository Structure
 
 ```text
-Chatty/
+chatZ/
   backend/
     controllers/
       authController.js
@@ -261,6 +261,32 @@ Default local URLs:
 - Socket.IO server: `http://localhost:4000`
 
 Open the frontend, register two users in separate browser sessions, copy one user's connect code, and add that user from the sidebar to begin a conversation.
+
+## Deployment
+
+### Frontend on Netlify
+
+The root `netlify.toml` keeps the repository layout intact and configures Netlify to build the Vite app from `frontend/`. Connect this repository to Netlify and set this environment variable in **Site configuration → Environment variables**:
+
+```env
+VITE_API_URL=https://your-backend-host.example/api
+```
+
+Replace the example with the public URL of your deployed backend, including `/api`. Trigger a deploy after setting it. Netlify's SPA redirect is included in `netlify.toml` so direct visits to app routes work.
+
+### Backend and data services
+
+Netlify hosts the frontend only. Deploy `backend/` as a long-running Node.js service on a host that supports WebSockets (Socket.IO), and provision hosted MongoDB and Redis instances. Configure these backend environment variables on that host:
+
+```env
+NODE_ENV=production
+CLIENT_ORIGIN=https://your-site.netlify.app
+MONGO_URI=your-mongodb-connection-string
+JWT_SECRET=a-long-random-secret
+REDIS_URI=your-redis-connection-string
+```
+
+`CLIENT_ORIGIN` can contain comma-separated origins if you use both a Netlify preview URL and a production domain. The backend uses secure cross-site cookies in production, so serve both frontend and backend over HTTPS. Once the backend is deployed, set `VITE_API_URL` to its public API URL in Netlify and redeploy the frontend.
 
 ## Backend API
 

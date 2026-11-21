@@ -55,8 +55,8 @@ import generateUniqueConnectCode from '../utils/generateUniqueConnectCode.js';
             res.cookie("jwt", token, {
                 maxAge: 7*24*60*60*1000, // 7 days
                 httpOnly: true,
-                sameSite: 'lax',
-                secure: false,
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                secure: process.env.NODE_ENV === 'production',
          } );
          res.status(200).json({user:{
             id: user.id,

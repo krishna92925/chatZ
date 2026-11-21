@@ -17,13 +17,18 @@ import messageRoutes from "./routes/messageRoutes.js"
 import { initializeSocket } from "./socket.js";
 import { socketAuthMiddleware } from "./socket/socketAuthMiddleware.js";
 
-import RedisService from "./services/RedisService.js";
+import RedisService from "./services/redisService.js";
 
 const app = express();
 const httpServer = http.createServer(app);
 
+const allowedOrigins = (process.env.CLIENT_ORIGIN || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
 app.use(cors({
-    origin: process.env.CLIENT_ORIGIN,
+    origin: allowedOrigins,
     credentials: true,
 }))
 app.use(cookieParser())
@@ -41,7 +46,7 @@ app.use('/api/conversations', messageRoutes);
 
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_ORIGIN,
+        origin: allowedOrigins,
         credentials: true,
         methods: ["GET", "POST"]
     },

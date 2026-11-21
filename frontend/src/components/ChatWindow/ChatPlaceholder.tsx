@@ -6,7 +6,7 @@ const ChatPlaceholder: React.FC = () => {
       <MessageCircle className="size-16 mb-4 opacity-70" />
 
       <h2 className="text-xl font-semibold">
-        Welcome to Chatty
+        Welcome to chatZ
       </h2>
 
       <p className="text-sm mt-2">
