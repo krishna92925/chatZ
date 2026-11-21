@@ -47,7 +47,7 @@ const MessageList: React.FC=()=>{
    
 
     return <>
-    <div ref={containerRef} className="flex-1 bg-gray-50 ovverflow-y-auto p-4 pb-10">
+    <div ref={containerRef} className="flex-1 bg-gray-50 overflow-y-auto p-4 pb-10">
         {hasNextPage && <div className="flex justify-center mb-4">
         <button
         type="button"

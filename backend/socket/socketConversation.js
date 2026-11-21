@@ -19,11 +19,13 @@ export const notifyConversationOnlineStatus = async (io, socket, online) => {
         })
 
         friendships.forEach((friendship) => {
-            const isRequester = friendship.requester._id.toString() === userId.toString();
-            const friendId = isRequester ? friendship.recipient._id : friendship.requester._id;
+            const requesterId = friendship.requester.toString();
+            const recipientId = friendship.recipient.toString();
+            const isRequester = requesterId === userId.toString();
+            const friendId = isRequester ? recipientId : requesterId;
 
             const room = getChatRoom(userId.toString(), friendId.toString());
-            socket.join(room);
+            if (online) socket.join(room);
 
             console.log("emit:conversation:online-status");
             io.to(friendId.toString())
@@ -43,19 +45,16 @@ export const conversationRequest = async (io,socket, data)=>{
     try {
         const userId= socket.userId;
         const user= socket.user;
-        const {connectCode}= data;
+        const {connectCode}= data ?? {};
         const friend = await User.findOne({ connectCode});
-        console.log("Conversation Request started");
         if(!friend){
             socket.emit("conversation:request:error",{error:"Unable to find conversation"});
             return;
         }
-        console.log("Conversation Request started");
         if(friend._id.toString()==userId.toString()){
             socket.emit("conversation:request:error",{error: "Cannot add yourself as a friend"});
             return;
         }
-         console.log("Conversation Request started");
         const existingFriendship= await Friendship.findOne({
             $or: [
                 {requester:userId, recipient:friend._id},
@@ -66,26 +65,31 @@ export const conversationRequest = async (io,socket, data)=>{
             socket.emit("conversation:request:error",{error: "Friendship already exists"});
             return;
         }
-         console.log("Conversation Request started");
         const friendship = await Friendship.create({
             requester: userId,
             recipient: friend._id,
         })
-        const conversation = await Conversation.create({
-            participants:[userId, friend._id.toString()]
-        })
-        console.log(conversation);
-        socket.join(getChatRoom(userId,friend._id.toString()));
+        let conversation;
+        try {
+            conversation = await Conversation.create({
+                participants:[userId, friend._id.toString()]
+            });
+        } catch (error) {
+            await Friendship.deleteOne({_id: friendship._id});
+            throw error;
+        }
+        const room = getChatRoom(userId,friend._id.toString());
+        io.in(userId.toString()).socketsJoin(room);
+        io.in(friend._id.toString()).socketsJoin(room);
         const conversationData={
             conversationId: conversation._id.toString(),
-            lastMesage: null,
+            lastMessage: null,
             unreadCounts:{
                 [userId.toString()]:0,
                 [friend._id.toString()]:0,
             },
 
         };
-        console.log("conversationData");
         io.to(userId.toString()).emit('conversation:accept',{
             ...conversationData,
             friend:{
@@ -96,7 +100,6 @@ export const conversationRequest = async (io,socket, data)=>{
                 online: await RedisService.isUserOnline(friend._id.toString()),
             }
         })
-        console.log("Io sent to user");
         io.to(friend._id.toString()).emit('conversation:accept',{
             ...conversationData,
             friend:{
@@ -104,10 +107,9 @@ export const conversationRequest = async (io,socket, data)=>{
                 fullName: user.fullName,
                 username: user.username,
                 connectCode: user.connectCode,
-                isOnline: await RedisService.isUserOnline(user._id.toString()),
+                online: await RedisService.isUserOnline(user._id.toString()),
             }
         })
-        console.log("Io sent to friend");
     } catch (error) {
         console.error("Error conversation: request",error);
         socket.emit("conversation:request:error",{error:"Error conversation request"})
@@ -116,7 +118,7 @@ export const conversationRequest = async (io,socket, data)=>{
 }
 export const conversationMarkAsRead = async(io,socket, data)=>{
     try {
-        const {conversationId, friendId}= data;
+        const {conversationId, friendId}= data ?? {};
         const userId= socket.userId;
         const friendship = await Friendship.findOne({
             $or:[
@@ -128,7 +130,10 @@ export const conversationMarkAsRead = async(io,socket, data)=>{
             socket.emit("conversation:mark-as-read:error",{error:"Error: conversation: mark-as-read:error"});
             return;
         }
-        const conversation= await Conversation.findById(conversationId);
+        const conversation= await Conversation.findOne({
+            _id: conversationId,
+            participants: {$all: [userId, friendId], $size: 2},
+        });
         if(!conversation){
             socket.emit("conversation:mark-as-read:error",{error:"Error: conversation: mark-as-read:error"});
             return;
@@ -141,7 +146,7 @@ export const conversationMarkAsRead = async(io,socket, data)=>{
             conversationId: conversation._id.toString(),
             unreadCounts:{
                 [userId.toString()]:0,
-                [friendId]:conversation.unreadCount.get(friendId) || 0,
+                [friendId.toString()]:conversation.unreadCount.get(friendId.toString()) || 0,
 
             }
         })
@@ -154,9 +159,13 @@ export const conversationMarkAsRead = async(io,socket, data)=>{
 }
 export const conversationSendMessage=async (io,socket,data)=>{
     try {
-        const {conversationId,friendId, content}= data;
+        const {conversationId,friendId, content}= data ?? {};
         const userId= socket.userId;
         const user= socket.user;
+        if (typeof content !== "string" || !content.trim() || content.trim().length > 5000) {
+            socket.emit("conversation:send-message:error", {error: "Message must be between 1 and 5000 characters"});
+            return;
+        }
           const friendship = await Friendship.findOne({
             $or:[
                 {requester: userId, recipient: friendId},
@@ -167,7 +176,10 @@ export const conversationSendMessage=async (io,socket,data)=>{
             socket.emit("conversation:send-message:error",{error:"No friendship found"});
             return;
         }
-        const conversation= await Conversation.findById(conversationId);
+        const conversation= await Conversation.findOne({
+            _id: conversationId,
+            participants: {$all: [userId, friendId], $size: 2},
+        });
         if(!conversation){
             socket.emit("conversation:send-message:error",{error:"No conversation found"});
             return;
@@ -175,7 +187,7 @@ export const conversationSendMessage=async (io,socket,data)=>{
         const message= new Message({
             conversation: conversationId,
             sender: userId,
-            content,
+            content: content.trim(),
 
         });
         await message.save();
@@ -189,7 +201,7 @@ export const conversationSendMessage=async (io,socket,data)=>{
                 _id: userId.toString(),
                 username: user.username,
             },
-            content,
+            content: message.content,
             createdAt: message.createdAt,
             read: message.read,
         }
@@ -218,12 +230,20 @@ export const conversationSendMessage=async (io,socket,data)=>{
 }
 export const conversationTyping = async(io,socket, data)=>{
     try {
-        const {friendId, isTyping}= data;
+        const {friendId, isTyping}= data ?? {};
         const userId = socket.userId;
-        if(userId.toString()=== friendId)return;
+        if (!friendId || typeof isTyping !== "boolean" || userId.toString() === friendId.toString()) return;
 
-        socket.to(friendId).emit("conversation:update-typing",{
-            userid: userId.toString(),
+        const friendship = await Friendship.findOne({
+            $or: [
+                {requester: userId, recipient: friendId},
+                {requester: friendId, recipient: userId},
+            ],
+        });
+        if (!friendship) return;
+
+        socket.to(friendId.toString()).emit("conversation:update-typing",{
+            userId: userId.toString(),
             isTyping,
         })
         

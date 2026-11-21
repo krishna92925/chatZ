@@ -12,11 +12,14 @@ const authMiddleware = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         req.user = await User.findById(decoded.userId).select("-password");
+        if (!req.user) {
+            return res.status(401).json({message: "Not authorized"});
+        }
 
         next();
 
     } catch (error) {
-        console.error(error);
+        console.error("Authentication failed:", error.message);
         res.status(401).json({message: "Not authorized"});
     }
 }

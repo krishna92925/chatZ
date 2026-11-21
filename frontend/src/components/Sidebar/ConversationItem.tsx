@@ -27,15 +27,11 @@ const ConversationItem: React.FC<Conversation> =({
             if(isSelected){
                 setSelectedConversation(null);
                 
-                console.log(`${friend.username} id deselected`);
-                console.log(selectedConversation);
 
             }
             else{
                 setSelectedConversation({conversationId,friend,lastMessage, unreadCounts});
               
-                console.log(`${friend.username} is selected`);
-                  console.log(selectedConversation);
             }
         }}
         

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { z } from "zod";
-import {useForm} from "react-hook-form"
+import {useForm, useWatch} from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {Loader2, Wifi} from "lucide-react"
@@ -22,11 +22,11 @@ interface AddConversationModalProps {
 const AddConversationModal: React.FC<AddConversationModalProps> = ({
     isOpen, onClose
 })=>{
-    const {register, handleSubmit, watch, reset, formState:{errors}}= useForm<AddConversationFormData>({
+    const {register, handleSubmit, control, reset, formState:{errors}}= useForm<AddConversationFormData>({
         resolver: zodResolver(addConversationSchema)
     })
     const {socket} = useSocketContext();
-    const connectCode = watch('connectCode');
+    const connectCode = useWatch({control, name: 'connectCode', defaultValue: ''});
     const {isFetching, refetch}= useQuery({
         queryKey: ["checkConnectCode", connectCode],
         queryFn: ()=> conversationService.checkConnectCode(connectCode),
@@ -37,10 +37,13 @@ const AddConversationModal: React.FC<AddConversationModalProps> = ({
     const onSubmit= async (formData: AddConversationFormData)=>{
         const result = await refetch();
         if(result?.data?.success){
+            if (!socket) {
+                toast.error("Chat connection is not ready. Please try again.");
+                return;
+            }
             socket?.emit('conversation:request',{
                 connectCode: formData.connectCode,
             })
-            console.log("Socket emitted conversation:request");
             onClose();
         }
         else{

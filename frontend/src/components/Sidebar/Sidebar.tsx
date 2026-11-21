@@ -1,5 +1,5 @@
 
-import { ConversationsProvider } from "../../contexts/ConversationContext";
+import { ConversationsProvider } from "../../contexts/ConversationsProvider";
 import Conversations from "./Conversations";
 import Header from "./Header";
 import SearchBar from "./Searchbar";

@@ -13,7 +13,7 @@ const conversationSchema = new mongoose.Schema({
     },
     lastMessagePreview:{
         content: String,
-        timeSstamp: Date
+        timestamp: Date
     },
     unreadCount:{
         type: Map,
@@ -24,11 +24,10 @@ const conversationSchema = new mongoose.Schema({
 
 conversationSchema.index({"participants.0":1,"participants.1":1},{unique:true});
 
-conversationSchema.pre('save',function(next){
+conversationSchema.pre('save',function(){
     if(this.participants && this.participants.length===2){
         this.participants=this.participants.map(p=>p.toString()).sort();
 
     }
-    //next();
 });
 export default mongoose.model("Conversation",conversationSchema);

@@ -2,7 +2,7 @@ import { Send } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useConversationStore } from "../../store/conversatonStore";
 import { useSocketContext } from "../../contexts/SocketContext";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const MessageInput: React.FC=()=>{
     const {user}= useAuthStore();
@@ -11,6 +11,10 @@ const MessageInput: React.FC=()=>{
     const [message, setMessage]= useState('');
     const typingTimeoutRef= useRef<number | null>(null);
     const isTypingRef= useRef(false);
+
+    useEffect(() => () => {
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    }, []);
 
     const emitTyping = (isTyping: boolean)=>{
         if(!socket || !user || !selectedConversation)return;
@@ -54,6 +58,7 @@ const MessageInput: React.FC=()=>{
             <textarea 
             placeholder="Type a message..."
             className="w-full text-sm bg-gray-100 rounded-full py-3 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
+            maxLength={5000}
             value= {message}
             onChange={(e)=>handleOnChange(e)}
             />
@@ -64,7 +69,7 @@ const MessageInput: React.FC=()=>{
             type="button" 
             className="bg-sky-500 text-white rounded-full size-10 flex items-center justify-center hover:bg-sky-600 cursor-pointer"
             >
-                <Send className="size[16px]"/>
+                <Send className="size-[16px]"/>
 
             </button>
         </div>

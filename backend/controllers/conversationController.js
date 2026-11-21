@@ -22,9 +22,8 @@ class ConversationController{
                 ],
             })
             if(existingFriendship){
-                return res.status(400).json({message:"Freindship already exists"});
+                return res.status(400).json({message:"Friendship already exists"});
             }
-            console.log("Connect codde is valid");
             res.json({
                 success: true,
                 message: "Connect code is valid",
@@ -53,7 +52,9 @@ class ConversationController{
                 return res.json({data:[]});
             }
            const friendIds = friendships.map((friend)=>
-        friend.requester._id.toString()==userId.toString()?friend.recipient._id.toString():friend.requester._id.toString()
+        friend.requester._id.toString() === userId.toString()
+            ? friend.recipient._id.toString()
+            : friend.requester._id.toString()
         );
         const conversations = await Conversation.find({
             participants:{
@@ -65,7 +66,7 @@ class ConversationController{
         const conversationMap = new Map();
         conversations.forEach((conversation)=>{
             const friendId = conversation.participants.find(p=>p.toString()!==userId.toString());
-       conversationMap.set(friendId._id.toString(),conversation);
+       if (friendId) conversationMap.set(friendId.toString(), conversation);
 
 
         })
@@ -75,7 +76,7 @@ class ConversationController{
                 const isRequester= friendship.requester._id.toString()==userId.toString();
                 const friend = isRequester? friendship.recipient: friendship.requester;
                 const conversation = conversationMap.get(friend._id.toString());
-                if(!conversation) return null;''
+                if(!conversation) return null;
                 return {
                     conversationId: conversation.id,
                     lastMessage: conversation.lastMessagePreview || null,
@@ -94,7 +95,7 @@ class ConversationController{
 
             })
         ])
-        res.json({data: conversationData});
+        res.json({data: conversationData.filter(Boolean)});
 
 
 

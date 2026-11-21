@@ -8,13 +8,13 @@ const Auth : React.FC=() =>{
    <div className="min-h-screen w-full bg-white flex flex-col md:flex-row">
     <div className="w-full md:w-6/12 bg-sky-500 p-8 text-white flex flex-col justify-center">
     <div className="text-center mb-8">
-        <div className ="flex jstify-center mb-6">
+        <div className ="flex justify-center mb-6">
             <div className="bg-white/20 p-4 rounded-full">
             <Mail className="size-10"/>
             </div>
             
         </div>
-        <h1 className="text-3xl foont bold mb-2">Welcome to chatZ</h1>
+        <h1 className="text-3xl font-bold mb-2">Welcome to chatZ</h1>
         <p className="text-lg">Connect with your friends and the world around you.</p>
 
     </div>

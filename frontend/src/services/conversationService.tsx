@@ -12,7 +12,6 @@ export const conversationService = {
                 connectCode,
             }
         });
-        console.log(response.data);
         return response.data;
     }
 }

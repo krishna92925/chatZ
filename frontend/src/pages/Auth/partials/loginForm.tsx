@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query"
 import { authService } from "../../../services/authService"
 import { toast } from "sonner"
 import { Loader2, Lock, Mail } from "lucide-react"
+import type { AxiosError } from "axios"
 
 
 
@@ -35,24 +36,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
     const mutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
-        console.log("ON SUCCESS");
-        console.log("DATA:", data);
-
         const { user } = data;
-
-        console.log("SETTING USER");
         setUser(user);
 
         toast.success("Login successful!");
 
-        console.log("NAVIGATING");
-
         navigate("/");
-
-        console.log("AFTER NAVIGATE");
     },
-    onError: (error) => {
-        console.error(error);
+    onError: (error: AxiosError<{message: string}>) => {
+        toast.error(error.response?.data?.message ?? "Login failed");
     }
 });
 
@@ -66,7 +58,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
             <div>
                 <label htmlFor="email" className="block text-gray-700 mb-2 text-sm">Email</label>
                 <div className="relative mb-2">
-                    <Mail className="absolute insset-y-0 left-3 size-5 text-gray-400 top-1/2 -translate-y-1/2"/>
+                    <Mail className="absolute inset-y-0 left-3 size-5 text-gray-400 top-1/2 -translate-y-1/2"/>
                     <input 
                         {...register('email')}
                         type="email"
@@ -80,7 +72,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
             <div>
                 <label htmlFor="password" className="block text-gray-700 mb-2 text-sm">Password</label>
                 <div className="relative mb-2">
-                    <Lock className="absolute insset-y-0 left-3 size-5 text-gray-400 top-1/2 -translate-y-1/2"/>
+                    <Lock className="absolute inset-y-0 left-3 size-5 text-gray-400 top-1/2 -translate-y-1/2"/>
                     <input 
                         {...register('password')}
                         type="password"
