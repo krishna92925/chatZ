@@ -1,33 +1,41 @@
 {
-  "name": "frontend",
+  "name": "chatz-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "@supabase/auth-js": "^2.119.2",
     "@tailwindcss/vite": "^4.2.4",
     "@tanstack/react-query": "^5.100.9",
     "axios": "^1.16.0",
-    "lucide-react": "^1.14.0",
+    "motion": "^14.14.0",
+    "qrcode": "^1.5.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-hook-form": "^7.75.0",
     "react-router": "^7.15.0",
     "socket.io-client": "^4.8.3",
     "sonner": "^2.0.7",
     "tailwindcss": "^4.2.4",
-    "zod": "^4.4.3",
     "zustand": "^5.0.13"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.13",
     "@types/node": "^24.12.2",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
@@ -35,8 +43,10 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "jsdom": "^31.0.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "vitest": "^5.1.1"
   }
 }

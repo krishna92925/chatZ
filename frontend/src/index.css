@@ -1,1 +1,169 @@
 @import 'tailwindcss';
+
+/* Palette: Vintage Charm (ink #0f0f0f, graphite #2d2e2e, taupe #716969, mauve #bcabae, paper #fbfbfb).
+   Every other shade is mixed from these five. */
+:root {
+  --ink: #0f0f0f;
+  --graphite: #2d2e2e;
+  --taupe: #716969;
+  --mauve: #bcabae;
+  --paper: #fbfbfb;
+
+  color-scheme: dark;
+  --c-bg: var(--ink);
+  --c-panel: color-mix(in srgb, var(--graphite) 52%, var(--ink));
+  --c-raised: var(--graphite);
+  --c-hover: color-mix(in srgb, var(--paper) 7%, transparent);
+  --c-line: color-mix(in srgb, var(--taupe) 38%, var(--ink));
+  --c-fg: var(--paper);
+  --c-muted: color-mix(in srgb, var(--paper) 62%, var(--ink));
+  --c-accent: var(--mauve);
+  --c-accent-hover: color-mix(in srgb, var(--mauve) 84%, var(--paper));
+  --c-on-accent: var(--ink);
+  --c-accent-text: var(--mauve);
+  --c-me: var(--mauve);
+  --c-on-me: var(--ink);
+  --c-them: var(--graphite);
+  --c-on-them: var(--paper);
+  --c-online: #8fb79a;
+  --c-danger: #dd9696;
+  --c-overlay: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --c-bg: var(--paper);
+  --c-panel: color-mix(in srgb, var(--mauve) 13%, var(--paper));
+  --c-raised: color-mix(in srgb, var(--mauve) 24%, var(--paper));
+  --c-hover: color-mix(in srgb, var(--ink) 6%, transparent);
+  --c-line: color-mix(in srgb, var(--taupe) 26%, var(--paper));
+  --c-fg: var(--ink);
+  --c-muted: var(--taupe);
+  --c-accent: var(--mauve);
+  --c-accent-hover: color-mix(in srgb, var(--mauve) 82%, var(--ink));
+  --c-on-accent: var(--ink);
+  --c-accent-text: color-mix(in srgb, var(--taupe) 78%, var(--ink));
+  --c-me: var(--mauve);
+  --c-on-me: var(--ink);
+  --c-them: color-mix(in srgb, var(--mauve) 22%, var(--paper));
+  --c-on-them: var(--ink);
+  --c-online: #4f8661;
+  --c-danger: #9f4545;
+  --c-overlay: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+
+@theme inline {
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Instrument Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-app: var(--c-bg);
+  --color-panel: var(--c-panel);
+  --color-raised: var(--c-raised);
+  --color-hover: var(--c-hover);
+  --color-line: var(--c-line);
+  --color-fg: var(--c-fg);
+  --color-muted: var(--c-muted);
+  --color-accent: var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-on-accent: var(--c-on-accent);
+  --color-accent-text: var(--c-accent-text);
+  --color-me: var(--c-me);
+  --color-on-me: var(--c-on-me);
+  --color-them: var(--c-them);
+  --color-on-them: var(--c-on-them);
+  --color-online: var(--c-online);
+  --color-danger: var(--c-danger);
+  --color-overlay: var(--c-overlay);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-fg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior: none;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--c-muted) 40%, transparent) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--c-accent) 55%, transparent);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--c-hover) 25%, color-mix(in srgb, var(--c-fg) 12%, transparent) 50%, var(--c-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 8px;
+}
+
+@keyframes dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+.typing-dot {
+  animation: dot 1.1s infinite;
+}
+
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+.shake {
+  animation: shake 0.35s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,15 @@
+# Local development database. Production uses Neon.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chatz
+      POSTGRES_PASSWORD: chatz
+      POSTGRES_DB: chatz_dev
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - chatz-pg:/var/lib/postgresql/data
+volumes:
+  chatz-pg:
