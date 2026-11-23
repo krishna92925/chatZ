@@ -54,7 +54,7 @@ create table friendships (
   user_low uuid not null references profiles(id) on delete cascade,
   user_high uuid not null references profiles(id) on delete cascade,
   requested_by uuid not null references profiles(id) on delete cascade,
-  status text not null check (status in ('pending', 'accepted')),
+  "status" text not null check ("status" in ('pending', 'accepted')),
   created_at timestamptz not null default now(),
   responded_at timestamptz,
   constraint friendship_order check (user_low < user_high),
